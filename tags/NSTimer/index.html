@@ -13,7 +13,7 @@
     
     
     
-    <title>之翎的小站</title>
+    <title>Tags: NSTimer | 之翎的小站</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <meta name="theme-color" content="#3F51B5">
@@ -22,7 +22,7 @@
     <meta name="keywords" content="">
     <meta property="og:type" content="website">
 <meta property="og:title" content="之翎的小站">
-<meta property="og:url" content="https://shawnge.github.io/index.html">
+<meta property="og:url" content="https://shawnge.github.io/tags/NSTimer/index.html">
 <meta property="og:site_name" content="之翎的小站">
 <meta property="og:locale" content="zh-Hans">
 <meta name="twitter:card" content="summary">
@@ -59,7 +59,7 @@
     <div class="scroll-wrap flex-col">
       <ul class="nav">
         
-            <li class="waves-block waves-effect active">
+            <li class="waves-block waves-effect">
               <a href="/"  >
                 <i class="icon icon-lg icon-home"></i>
                 主页
@@ -73,7 +73,7 @@
               </a>
             </li>
         
-            <li class="waves-block waves-effect">
+            <li class="waves-block waves-effect active">
               <a href="/tags"  >
                 <i class="icon icon-lg icon-tags"></i>
                 标签
@@ -98,43 +98,59 @@
         <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
           <i class="icon icon-lg icon-navicon"></i>
         </a>
-        <div class="flex-col header-title ellipsis">之翎的小站</div>
+        <div class="flex-col header-title ellipsis">Tags: NSTimer</div>
         
         
     </div>
 </header>
-<header class="content-header index-header">
+<header class="content-header tags-header">
 
     <div class="container fade-scale">
-        <h1 class="title">之翎的小站</h1>
+        <h1 class="title">Tags: NSTimer</h1>
         <h5 class="subtitle">
-            
-                
             
         </h5>
     </div>
 
     
+<div class="tabs-bar container">
+    <nav class="tags-list">
+        <a href="/tags" style="-webkit-order:-1;order:-1" class="tags-list-item waves-effect waves-button waves-light
+            ">All</a>
+        
+
+            <a href="/tags/iOS/" style="-webkit-order:0;order:0" class="tags-list-item waves-effect waves-button waves-light">iOS</a>
+
+        
+
+            <a href="/tags/NSTimer/" style="-webkit-order:1;order:1" class="tags-list-item waves-effect waves-button waves-light active">NSTimer</a>
+
+        
+    </nav>
+    <!-- PC show more-->
+    <div class="tags-list-more">
+        <a href="javascript:;" onclick="BLOG.tabBar(this)" class="action tags-list-item waves-effect waves-circle waves-light"><i class="icon icon-ellipsis-h"></i></a>
+    </div>
+</div>
+
 
 
 </header>
 
-<div class="container body-wrap">
-
-    <ul class="post-list">
+<div class="container body-wrap fade">
     
-        <li class="post-list-item fade">
-            <article id="post-NSTimer内存泄露"
-  class="article-card article-type-post" itemprop="blogPost">
+            <div class="waterfall">
+          
 
+            <div class="waterfall-item">
+  <article class="article-card archive-article">
     <div class="post-meta">
-        <time class="post-time" title="2018-01-09 18:56:02" datetime="2018-01-09T10:56:02.000Z"  itemprop="datePublished">2018-01-09</time>
+      <time class="post-time" title="2018-01-09 18:56:02" datetime="2018-01-09T10:56:02.000Z"  itemprop="datePublished">2018-01-09</time>
 
-        
+      
 
 
     </div>
-
     
 
 
@@ -146,18 +162,6 @@
 
 
 
-
-    <div class="post-content" id="post-content" itemprop="postContent">
-
-    
-        在NSTimer的使用过程中，经常一不小心就导致内存泄露的问题，要么NSTimer的持有者无法正常释放，要么NSTimer本身无法释放；不管哪种情况出现，都说明我们对NSTimer理解不够彻底，导致代码有问题。下面就总结下我们代码过程中会出现的问题：
-内存泄露情况第一种情况12345678910111213141516@interface TimerViewController ()@pro...
-    
-
-        <a href="/2018/01/09/NSTimer内存泄露/" class="post-more waves-effect waves-button">
-            Continue reading...
-        </a>
-    </div>
     
     <div class="post-footer">
         
@@ -165,15 +169,15 @@
 
     </div>
     
-</article>
-
-        </li>
-    
-    </ul>
-
-    
-
+  </article>
 </div>
+
+        
+            </div>
+        
+    
+</div>
+
 
         <footer class="footer">
     <div class="top">

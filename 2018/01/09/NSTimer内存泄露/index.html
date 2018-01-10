@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    <title>NSTimer内存泄露 | 之翎的小站</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="iOS,NSTimer">
+    <meta name="description" content="在NSTimer的使用过程中，经常一不小心就导致内存泄露的问题，要么NSTimer的持有者无法正常释放，要么NSTimer本身无法释放；不管哪种情况出现，都说明我们对NSTimer理解不够彻底，导致代码有问题。下面就总结下我们代码过程中会出现的问题： 内存泄露情况第一种情况12345678910111213141516@interface TimerViewController ()@proper">
+<meta name="keywords" content="iOS,NSTimer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSTimer内存泄露">
+<meta property="og:url" content="https://shawnge.github.io/2018/01/09/NSTimer内存泄露/index.html">
+<meta property="og:site_name" content="之翎的小站">
+<meta property="og:description" content="在NSTimer的使用过程中，经常一不小心就导致内存泄露的问题，要么NSTimer的持有者无法正常释放，要么NSTimer本身无法释放；不管哪种情况出现，都说明我们对NSTimer理解不够彻底，导致代码有问题。下面就总结下我们代码过程中会出现的问题： 内存泄露情况第一种情况12345678910111213141516@interface TimerViewController ()@proper">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-10T08:54:53.933Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NSTimer内存泄露">
+<meta name="twitter:description" content="在NSTimer的使用过程中，经常一不小心就导致内存泄露的问题，要么NSTimer的持有者无法正常释放，要么NSTimer本身无法释放；不管哪种情况出现，都说明我们对NSTimer理解不够彻底，导致代码有问题。下面就总结下我们代码过程中会出现的问题： 内存泄露情况第一种情况12345678910111213141516@interface TimerViewController ()@proper">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu"  >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/avatar.png">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">之翎</h5>
+          <a href="mailto:zhiling1991@gmail.com" title="zhiling1991@gmail.com" class="mail">zhiling1991@gmail.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                主页
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                归档
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                标签
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/Shawnge" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">NSTimer内存泄露</div>
+        
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">NSTimer内存泄露</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-01-09T10:56:02.000Z" itemprop="datePublished" class="page-time">
+  2018-01-09
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+    <aside class="post-widget">
+        <nav class="post-toc-wrap" id="post-toc">
+            <h4>TOC</h4>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#内存泄露情况"><span class="post-toc-number">1.</span> <span class="post-toc-text">内存泄露情况</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第一种情况"><span class="post-toc-number">1.1.</span> <span class="post-toc-text">第一种情况</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#解决方案"><span class="post-toc-number">1.1.1.</span> <span class="post-toc-text">解决方案</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#示例"><span class="post-toc-number">1.1.2.</span> <span class="post-toc-text">示例</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#注意"><span class="post-toc-number">1.1.3.</span> <span class="post-toc-text">注意</span></a></li></ol></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#第二种情况"><span class="post-toc-number">1.2.</span> <span class="post-toc-text">第二种情况</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#解决方案-1"><span class="post-toc-number">1.2.1.</span> <span class="post-toc-text">解决方案</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#示例-1"><span class="post-toc-number">1.2.2.</span> <span class="post-toc-text">示例</span></a></li><li class="post-toc-item post-toc-level-5"><a class="post-toc-link" href="#注意-1"><span class="post-toc-number">1.2.3.</span> <span class="post-toc-text">注意</span></a></li></ol></li></ol></li></ol>
+        </nav>
+    </aside>
+    
+<article id="post-NSTimer内存泄露"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">NSTimer内存泄露</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-01-09 18:56:02" datetime="2018-01-09T10:56:02.000Z"  itemprop="datePublished">2018-01-09</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p>在<code>NSTimer</code>的使用过程中，经常一不小心就导致内存泄露的问题，要么<code>NSTimer</code>的持有者无法正常释放，要么<code>NSTimer</code>本身无法释放；不管哪种情况出现，都说明我们对<code>NSTimer</code>理解不够彻底，导致代码有问题。下面就总结下我们代码过程中会出现的问题：</p>
+<h3 id="内存泄露情况"><a href="#内存泄露情况" class="headerlink" title="内存泄露情况"></a>内存泄露情况</h3><h4 id="第一种情况"><a href="#第一种情况" class="headerlink" title="第一种情况"></a>第一种情况</h4><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">TimerViewController</span> ()</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSTimer</span> *timer;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">TimerViewController</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line">    <span class="keyword">self</span>.timer = [<span class="built_in">NSTimer</span> scheduledTimerWithTimeInterval:<span class="number">1</span> target:<span class="keyword">self</span> selector:<span class="keyword">@selector</span>(timeCallBack:) userInfo:<span class="literal">nil</span> repeats:<span class="literal">YES</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)timeCallBack:(<span class="built_in">NSTimer</span> *)timer &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"%s"</span>, __PRETTY_FUNCTION__);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述情况：<code>self</code>强引用了<code>NSTimer</code>, <code>NSTimer</code>通过<code>target</code>也强引用了<code>self</code>,导致了循环引用；同时<code>NSRunloop</code>也强引用了<code>NSTimer</code>。上面代码中<code>NSTimer</code>的引用方式由<code>strong</code>改为<code>weak</code>,可以解决<code>self</code>和<code>NSTimer</code>的循环引用。</p>
+<h5 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h5><p>在<code>dealloc</code>之前调用<code>invalidate</code>停止<code>NSTimer</code>, <code>invalidate</code>会将<code>NSTimer</code>从<code>NSRunloop</code>移除，同时也会移除<code>NSTimer</code>对<code>target</code>和<code>userInfo</code>的强引用，所以上面代码中，不论<code>NSTimer</code>的引用方式是<code>strong</code>还是<code>weak</code>，都是可以正常释放</p>
+<h5 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h5><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewWillDisappear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewWillDisappear:animated];</span><br><span class="line">     </span><br><span class="line">    [<span class="keyword">self</span>.timer invalidate];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h5><p><code>NSTimer</code>必须配合<code>NSRunloop</code>才能使用，<code>NSTimer</code>实例化方法中<code>scheduledTimerWithTimeInterval:invocation:repeats:</code>和 <code>scheduledTimerWithTimeInterval:target:selector:userInfo:repeats:</code>会自动以<code>NSDefaultRunLoopMode</code>加入到<code>[NSRunLoop currentRunLoop]</code>,所以不需要手动调用<code>addTimer:forMode:</code>方法；另外两种实例化方法，都必须手动调用<code>addTimer:forMode:</code>方法，将<code>NSTimer</code>加到<code>NSRunloop</code>中。</p>
+<h4 id="第二种情况"><a href="#第二种情况" class="headerlink" title="第二种情况"></a>第二种情况</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">@interface TimerViewController ()</span><br><span class="line"></span><br><span class="line">@property (nonatomic, weak) NSTimer *timer;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation TimerViewController</span><br><span class="line"></span><br><span class="line">- (void)viewDidLoad &#123;</span><br><span class="line">    [super viewDidLoad];</span><br><span class="line">    self.timer = [NSTimer scheduledTimerWithTimeInterval:1 repeats:YES block:^(NSTimer * _Nonnull timer) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述情况：其实只有<code>NSRunloop</code>强引用了<code>NSTimer</code>，<code>self</code>会正常调用<code>dealloc</code>，但是<code>NSTimer</code>不会被释放，而是一直在执行。解决起来也很简单，可以参考下面<a href="#解决方案-1">解决方案</a></p>
+<h5 id="解决方案-1"><a href="#解决方案-1" class="headerlink" title="解决方案"></a>解决方案</h5><p>针对上述情况，只需在<code>self</code>的 <code>dealloc</code>中调用<code>invalidate</code>停止<code>NSTimer</code>即可。</p>
+<h5 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- (void)dealloc &#123; </span><br><span class="line">   [self.timer invalidate]; //正常释放NSTimer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="注意-1"><a href="#注意-1" class="headerlink" title="注意"></a>注意</h5><p>上述的<code>scheduledTimerWithTimeInterval:repeats:block:</code>只在iOS 10上可用，在iOS 10以下可以参考下面的代码或者直接使用<a href="https://github.com/BlocksKit/BlocksKit" target="_blank" rel="noopener">BlocksKit</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">typedef void (^SAExecuteDisplayLinkBlock)(NSTimer *timer);</span><br><span class="line">@implementation NSTimer (Tool)</span><br><span class="line"></span><br><span class="line">- (void)setExecuteBlock:(SAExecuteDisplayLinkBlock)executeBlock &#123;</span><br><span class="line">    objc_setAssociatedObject(self, @selector(executeBlock), executeBlock, OBJC_ASSOCIATION_COPY_NONATOMIC);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (SAExecuteDisplayLinkBlock)executeBlock &#123;</span><br><span class="line">    return objc_getAssociatedObject(self, _cmd);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (NSTimer *)sa_timerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(SAExecuteDisplayLinkBlock)block &#123;</span><br><span class="line">    NSTimer *timer = [NSTimer timerWithTimeInterval:interval target:self selector:@selector(sa_executeTimer:) userInfo:nil repeats:repeats];</span><br><span class="line">    timer.executeBlock = [block copy];</span><br><span class="line">    return timer;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (void)sa_executeTimer:(NSTimer *)timer &#123;</span><br><span class="line">    if (timer.executeBlock) &#123;</span><br><span class="line">        timer.executeBlock(timer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">@end</span><br></pre></td></tr></table></figure></p>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    <div class="content">
+        
+
+        
+    </div>
+    <footer>
+        <a href="https://shawnge.github.io">
+            <img src="/img/avatar.png" alt="之翎">
+            之翎
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NSTimer/">NSTimer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+
+            
+
+
+        </div>
+    </div>
+
+    
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+            <span>This blog is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>.</span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>之翎 &copy; 2015 - 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: false, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
